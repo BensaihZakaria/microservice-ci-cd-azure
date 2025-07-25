@@ -1,8 +1,13 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'           // le nom défini dans Jenkins pour Maven
+        nodejs 'nodejs24'        // le nom défini dans Jenkins pour NodeJS (adapte si tu as mis un autre nom)
+    }
+
     environment {
-        REGISTRY = "tonregistry.azurecr.io"
+        REGISTRY = "tonregistry.azurecr.io" // à personnaliser plus tard
     }
 
     stages {
@@ -64,7 +69,9 @@ pipeline {
                 }
             }
         }
-        // Ajouts futurs
+        // On ajoutera ici plus tard :
+        // - Push Docker Registry (Azure CR ou Docker Hub)
+        // - SonarQube, Trivy, etc.
+        // - Déploiement Azure AKS
     }
 }
-
