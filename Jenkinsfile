@@ -2,14 +2,13 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "tonregistry.azurecr.io" // Ou ton Docker Hub, à personnaliser plus tard
+        REGISTRY = "tonregistry.azurecr.io"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Clone le repo actuel
-                git 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
+                git branch: 'main', url: 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
             }
         }
         stage('Build & Package Backends') {
@@ -65,9 +64,7 @@ pipeline {
                 }
             }
         }
-        // On ajoutera ici plus tard :
-        // - Push Docker Registry (Azure CR ou Docker Hub)
-        // - SonarQube, Trivy, etc.
-        // - Déploiement Azure AKS
+        // Ajouts futurs
     }
 }
+
