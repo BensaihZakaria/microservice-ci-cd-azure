@@ -50,11 +50,11 @@ pipeline {
                         }
                     }
                 }
-                stage('Gateway Service') {
+                stage('api-gateway') {
                     steps {
-                        dir('gateway-service') {
+                        dir('api-gateway') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t gateway-service:latest .'
+                            sh 'docker build -t api-gateway:latest .'
                         }
                     }
                 }
