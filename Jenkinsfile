@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     tools {
-        maven 'maven3'           // le nom défini dans Jenkins pour Maven
-        nodejs 'nodejs24'        // le nom défini dans Jenkins pour NodeJS (adapte si tu as mis un autre nom)
+        maven 'maven3'
+        nodejs 'nodejs24'
     }
 
     environment {
-        REGISTRY = "tonregistry.azurecr.io" // à personnaliser plus tard
+        REGISTRY = "monacrtest.azurecr.io"
     }
 
     stages {
@@ -16,6 +16,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
             }
         }
+
         stage('Build & Package Backends') {
             parallel {
                 stage('Product Service') {
@@ -60,6 +61,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
@@ -69,9 +71,31 @@ pipeline {
                 }
             }
         }
-        // On ajoutera ici plus tard :
-        // - Push Docker Registry (Azure CR ou Docker Hub)
-        // - SonarQube, Trivy, etc.
-        // - Déploiement Azure AKS
+
+        stage('Push Docker Images to ACR') {
+            steps {
+                script {
+                    def services = [
+                        'product-service',
+                        'order-service',
+                        'inventory-service',
+                        'notification-service',
+                        'api-gateway',
+                        'frontend'
+                    ]
+                    withCredentials([usernamePassword(credentialsId: 'acr-credentials', usernameVariable: 'ACR_USERNAME', passwordVariable: 'ACR_PASSWORD')]) {
+                        sh """
+                            echo \$ACR_PASSWORD | docker login ${REGISTRY} -u \$ACR_USERNAME --password-stdin
+                            ${services.collect{ service -> """
+                            docker tag ${service}:latest ${REGISTRY}/${service}:latest
+                            docker push ${REGISTRY}/${service}:latest
+                            """ }.join('\n')}
+                        """
+                    }
+                }
+            }
+        }
+
+        // D'autres stages plus tard (SonarQube, Trivy, AKS, etc)
     }
 }
