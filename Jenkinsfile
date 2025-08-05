@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "monacrtest.azurecr.io"
+        REGISTRY = "zakaria697"
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
                     steps {
                         dir('product-service') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t product-service:latest .'
+                            sh "docker build -t ${REGISTRY}/product-service:latest ."
                         }
                     }
                 }
@@ -31,7 +31,7 @@ pipeline {
                     steps {
                         dir('order-service') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t order-service:latest .'
+                            sh "docker build -t ${REGISTRY}/order-service:latest ."
                         }
                     }
                 }
@@ -39,7 +39,7 @@ pipeline {
                     steps {
                         dir('inventory-service') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t inventory-service:latest .'
+                            sh "docker build -t ${REGISTRY}/inventory-service:latest ."
                         }
                     }
                 }
@@ -47,15 +47,15 @@ pipeline {
                     steps {
                         dir('notification-service') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t notification-service:latest .'
+                            sh "docker build -t ${REGISTRY}/notification-service:latest ."
                         }
                     }
                 }
-                stage('api-gateway') {
+                stage('API Gateway') {
                     steps {
                         dir('api-gateway') {
                             sh 'mvn clean package -DskipTests'
-                            sh 'docker build -t api-gateway:latest .'
+                            sh "docker build -t ${REGISTRY}/api-gateway:latest ."
                         }
                     }
                 }
@@ -67,12 +67,12 @@ pipeline {
                 dir('frontend') {
                     sh 'npm install'
                     sh 'npm run build --prod'
-                    sh 'docker build -t frontend:latest .'
+                    sh "docker build -t ${REGISTRY}/frontend:latest ."
                 }
             }
         }
 
-        stage('Push Docker Images to ACR') {
+        stage('Push Docker Images to DockerHub') {
             steps {
                 script {
                     def services = [
@@ -83,11 +83,10 @@ pipeline {
                         'api-gateway',
                         'frontend'
                     ]
-                    withCredentials([usernamePassword(credentialsId: 'acr-credentials', usernameVariable: 'ACR_USERNAME', passwordVariable: 'ACR_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh """
-                            echo \$ACR_PASSWORD | docker login ${REGISTRY} -u \$ACR_USERNAME --password-stdin
+                            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
                             ${services.collect{ service -> """
-                            docker tag ${service}:latest ${REGISTRY}/${service}:latest
                             docker push ${REGISTRY}/${service}:latest
                             """ }.join('\n')}
                         """
@@ -95,7 +94,5 @@ pipeline {
                 }
             }
         }
-
-        // D'autres stages plus tard (SonarQube, Trivy, AKS, etc)
     }
 }
