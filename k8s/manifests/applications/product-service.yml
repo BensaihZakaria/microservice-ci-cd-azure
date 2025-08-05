@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: monacrtest.azurecr.io/product-service:latest
+          image: zakaria697/product-service:latest
           env:
             - name: SPRING_DATA_MONGODB_URI
               valueFrom:
