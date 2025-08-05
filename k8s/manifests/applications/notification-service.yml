@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: monacrtest.azurecr.io/notification-service:latest
+          image: zakaria697/notification-service:latest
           env:
             - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
               valueFrom:
