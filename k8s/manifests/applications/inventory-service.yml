@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: inventory-service
-          image: monacrtest.azurecr.io/inventory-service:latest
+          image: zakaria697/inventory-service:latest
           env:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
