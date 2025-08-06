@@ -56,6 +56,8 @@ spec:
                   name: keycloak-secrets
             - name: KEYCLOAK_FRONTEND_URL
                value: http://172.189.111.191/
+            - name: KC_HOSTNAME_STRICT
+               value: "false"
           volumeMounts:
             - name: keycloak-realm
               mountPath: /opt/keycloak/data/import
