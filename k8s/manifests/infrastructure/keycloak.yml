@@ -54,6 +54,8 @@ spec:
                 secretKeyRef:
                   key: KEYCLOAK_ADMIN_PASSWORD
                   name: keycloak-secrets
+            - name: KEYCLOAK_FRONTEND_URL
+               value: http://<IP_PUBLIC_KEYCLOAK>/
           volumeMounts:
             - name: keycloak-realm
               mountPath: /opt/keycloak/data/import
