@@ -7,64 +7,13 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "zakaria697" // Ton nom DockerHub
+        REGISTRY = "zakaria697" // ton nom DockerHub
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            parallel {
-                stage('Sonar - Product Service') {
-                    steps {
-                        dir('product-service') {
-                            withSonarQubeEnv('SonarQubeServer') {
-                                sh 'mvn clean verify sonar:sonar'
-                            }
-                        }
-                    }
-                }
-                stage('Sonar - Order Service') {
-                    steps {
-                        dir('order-service') {
-                            withSonarQubeEnv('SonarQubeServer') {
-                                sh 'mvn clean verify sonar:sonar'
-                            }
-                        }
-                    }
-                }
-                stage('Sonar - Inventory Service') {
-                    steps {
-                        dir('inventory-service') {
-                            withSonarQubeEnv('SonarQubeServer') {
-                                sh 'mvn clean verify sonar:sonar'
-                            }
-                        }
-                    }
-                }
-                stage('Sonar - Notification Service') {
-                    steps {
-                        dir('notification-service') {
-                            withSonarQubeEnv('SonarQubeServer') {
-                                sh 'mvn clean verify sonar:sonar'
-                            }
-                        }
-                    }
-                }
-                stage('Sonar - API Gateway') {
-                    steps {
-                        dir('api-gateway') {
-                            withSonarQubeEnv('SonarQubeServer') {
-                                sh 'mvn clean verify sonar:sonar'
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -132,7 +81,16 @@ pipeline {
                 }
             }
         }
-
+        stage('SonarQube Analysis') {
+             environment {
+                  SONAR_TOKEN = credentials('sonarqube-token')
+         }
+          steps {
+                 withSonarQubeEnv('SonarQube') {
+                     sh 'mvn sonar:sonar -Dsonar.projectKey=microservice-ci-cd-azure -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN'
+                }
+           }
+        }
         stage('Push Docker Images to DockerHub') {
             steps {
                 script {
