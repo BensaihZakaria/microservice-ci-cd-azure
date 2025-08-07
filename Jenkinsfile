@@ -110,7 +110,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
                         export KUBECONFIG=$KUBECONFIG_FILE
-                        kubectl apply -f k8s/
+                        kubectl apply -R -f k8s/manifests/
                     '''
                 }
             }
