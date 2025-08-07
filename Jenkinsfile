@@ -104,5 +104,16 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to AKS') {
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+                    sh '''
+                        export KUBECONFIG=$KUBECONFIG_FILE
+                        kubectl apply -f k8s/
+                    '''
+                }
+            }
+        }
     }
 }
