@@ -82,15 +82,12 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-             environment {
-                  SONAR_TOKEN = credentials('sonarqube-token')
-         }
-          steps {
-                 withSonarQubeEnv('SonarQube') {
-                     sh 'mvn sonar:sonar -Dsonar.projectKey=microservice-ci-cd-azure -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN'
-                }
-           }
+    steps {
+        withSonarQubeEnv('SonarQubeServer') {
+            sh 'mvn sonar:sonar'
         }
+    }
+}
         stage('Push Docker Images to DockerHub') {
             steps {
                 script {
