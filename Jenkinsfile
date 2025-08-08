@@ -7,11 +7,10 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "zakaria697" // Ton nom DockerHub
+        REGISTRY = "zakaria697" // ton nom DockerHub
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
@@ -82,7 +81,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Push Docker Images to DockerHub') {
             steps {
                 script {
@@ -102,17 +101,6 @@ pipeline {
                             """ }.join('\n')}
                         """
                     }
-                }
-            }
-        }
-
-        stage('Deploy to AKS') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
-                    sh '''
-                        export KUBECONFIG=$KUBECONFIG_FILE
-                        kubectl apply -R -f k8s/manifests/
-                    '''
                 }
             }
         }
