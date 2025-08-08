@@ -7,10 +7,11 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "zakaria697" // ton nom DockerHub
+        REGISTRY = "zakaria697" // Ton nom DockerHub
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/BensaihZakaria/microservice-ci-cd-azure.git'
@@ -81,7 +82,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push Docker Images to DockerHub') {
             steps {
                 script {
