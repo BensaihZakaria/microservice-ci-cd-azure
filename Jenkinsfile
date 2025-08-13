@@ -105,4 +105,17 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            script {
+                def url = "http://4.178.216.36"
+                currentBuild.description = "<a href='${url}' target='_blank'>🌐 Ouvrir le Frontend</a>"
+                echo "✅ Frontend disponible : ${url}"
+            }
+        }
+        failure {
+            echo '❌ Pipeline échoué.'
+        }
+    }
 }
