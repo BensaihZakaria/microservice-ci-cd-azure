@@ -1,22 +1,21 @@
+# k8s\auth-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: auth-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # on enlève le préfixe /auth avant d'envoyer vers Keycloak
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
-      # fait matcher /auth, /auth/, et tout ce qui suit (/auth/...).
       - path: /auth(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
-            name: keycloak-public   # ton svc (port 80 vers le pod 8080)
+            name: keycloak-public
             port:
               number: 80
