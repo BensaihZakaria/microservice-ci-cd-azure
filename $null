@@ -1,0 +1,3 @@
+Error from server (NotFound): ingresses.networking.k8s.io "apis-ingress" not found
+Error from server (NotFound): ingresses.networking.k8s.io "auth-ingress" not found
+Error from server (NotFound): ingresses.networking.k8s.io "frontend-ingress" not found
