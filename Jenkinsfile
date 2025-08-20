@@ -104,6 +104,32 @@ pipeline {
                 }
             }
         }
+
+        // ✅ Nouveau stage Trivy
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    def images = [
+                        "${REGISTRY}/product-service:latest",
+                        "${REGISTRY}/order-service:latest",
+                        "${REGISTRY}/inventory-service:latest",
+                        "${REGISTRY}/notification-service:latest",
+                        "${REGISTRY}/api-gateway:latest",
+                        "${REGISTRY}/frontend:latest"
+                    ]
+                    
+                    for (img in images) {
+                        sh """
+                            echo "🔎 Scanning image: ${img}"
+                            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image \
+                            --severity HIGH,CRITICAL \
+                            --exit-code 0 \
+                            --no-progress ${img}
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
