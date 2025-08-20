@@ -109,7 +109,7 @@ pipeline {
     post {
         success {
             script {
-                def url = "http://4.178.216.36"
+                def url = "http://172.189.28.145/"
                 currentBuild.description = "<a href='${url}' target='_blank'>🌐 Ouvrir le Frontend</a>"
                 echo "✅ Frontend disponible : ${url}"
             }
