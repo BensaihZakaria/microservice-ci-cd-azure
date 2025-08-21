@@ -81,6 +81,17 @@ pipeline {
                 }
             }
         }
+
+        // ✅ Nouveau stage SonarQube (test avec product-service uniquement)
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube-server') {
+                    dir('product-service') {
+                        sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=product-service -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_AUTH_TOKEN'
+                    }
+                }
+            }
+        }
         
         stage('Push Docker Images to DockerHub') {
             steps {
@@ -105,7 +116,7 @@ pipeline {
             }
         }
 
-        // ✅ Nouveau stage Trivy
+        // ✅ Stage Trivy
         stage('Trivy Scan') {
             steps {
                 script {
