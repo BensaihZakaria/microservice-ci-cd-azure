@@ -4,12 +4,11 @@ pipeline {
     tools {
         maven 'maven3'
         nodejs 'nodejs24'
-        sonarQubeScanner 'sonar-scanner'   // ✅ ajout Sonar Scanner
     }
 
     environment {
         REGISTRY = "zakaria697"
-        SONAR_TOKEN = credentials('sonar-token')  // ✅ ton token SonarQube
+        SONAR_TOKEN = credentials('sonar-token')
     }
 
     stages {
@@ -132,7 +131,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Push Docker Images to DockerHub') {
             steps {
                 script {
