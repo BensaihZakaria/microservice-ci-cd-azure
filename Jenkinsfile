@@ -4,6 +4,7 @@ pipeline {
     tools {
         maven 'maven3'
         nodejs 'nodejs24'
+        sonarScanner 'sonar-scanner'   // ✅ ajouté
     }
 
     environment {
@@ -120,7 +121,7 @@ pipeline {
                     sh 'npm run build --prod'
                     withSonarQubeEnv('sonarqube') {
                         sh """
-                            sonar-scanner \
+                            ${tool 'sonar-scanner'}/bin/sonar-scanner \
                               -Dsonar.projectKey=frontend \
                               -Dsonar.sources=. \
                               -Dsonar.host.url=http://host.docker.internal:9000 \
