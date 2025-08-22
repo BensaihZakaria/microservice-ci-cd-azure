@@ -7,7 +7,8 @@ pipeline {
     }
 
     environment {
-        REGISTRY = "zakaria697" // ton nom DockerHub
+        REGISTRY = "zakaria697"
+        SONAR_TOKEN = credentials('sonar-token')  // ton token SonarQube
     }
 
     stages {
@@ -27,12 +28,20 @@ pipeline {
             }
         }
 
-        stage('Build & Package Backends') {
+        stage('Build & SonarQube Analysis - Backends') {
             parallel {
                 stage('Product Service') {
                     steps {
                         dir('product-service') {
                             sh 'mvn clean package -DskipTests'
+                            withSonarQubeEnv('sonarqube') {
+                                sh """
+                                    mvn sonar:sonar \
+                                      -Dsonar.projectKey=product-service \
+                                      -Dsonar.host.url=http://host.docker.internal:9000 \
+                                      -Dsonar.login=$SONAR_TOKEN
+                                """
+                            }
                             sh "docker build -t ${REGISTRY}/product-service:latest ."
                         }
                     }
@@ -41,6 +50,14 @@ pipeline {
                     steps {
                         dir('order-service') {
                             sh 'mvn clean package -DskipTests'
+                            withSonarQubeEnv('sonarqube') {
+                                sh """
+                                    mvn sonar:sonar \
+                                      -Dsonar.projectKey=order-service \
+                                      -Dsonar.host.url=http://host.docker.internal:9000 \
+                                      -Dsonar.login=$SONAR_TOKEN
+                                """
+                            }
                             sh "docker build -t ${REGISTRY}/order-service:latest ."
                         }
                     }
@@ -49,6 +66,14 @@ pipeline {
                     steps {
                         dir('inventory-service') {
                             sh 'mvn clean package -DskipTests'
+                            withSonarQubeEnv('sonarqube') {
+                                sh """
+                                    mvn sonar:sonar \
+                                      -Dsonar.projectKey=inventory-service \
+                                      -Dsonar.host.url=http://host.docker.internal:9000 \
+                                      -Dsonar.login=$SONAR_TOKEN
+                                """
+                            }
                             sh "docker build -t ${REGISTRY}/inventory-service:latest ."
                         }
                     }
@@ -57,6 +82,14 @@ pipeline {
                     steps {
                         dir('notification-service') {
                             sh 'mvn clean package -DskipTests'
+                            withSonarQubeEnv('sonarqube') {
+                                sh """
+                                    mvn sonar:sonar \
+                                      -Dsonar.projectKey=notification-service \
+                                      -Dsonar.host.url=http://host.docker.internal:9000 \
+                                      -Dsonar.login=$SONAR_TOKEN
+                                """
+                            }
                             sh "docker build -t ${REGISTRY}/notification-service:latest ."
                         }
                     }
@@ -65,6 +98,14 @@ pipeline {
                     steps {
                         dir('api-gateway') {
                             sh 'mvn clean package -DskipTests'
+                            withSonarQubeEnv('sonarqube') {
+                                sh """
+                                    mvn sonar:sonar \
+                                      -Dsonar.projectKey=api-gateway \
+                                      -Dsonar.host.url=http://host.docker.internal:9000 \
+                                      -Dsonar.login=$SONAR_TOKEN
+                                """
+                            }
                             sh "docker build -t ${REGISTRY}/api-gateway:latest ."
                         }
                     }
@@ -72,11 +113,20 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
+        stage('Build & SonarQube Analysis - Frontend') {
             steps {
                 dir('frontend') {
                     sh 'npm install'
                     sh 'npm run build --prod'
+                    withSonarQubeEnv('sonarqube') {
+                        sh """
+                            sonar-scanner \
+                              -Dsonar.projectKey=frontend \
+                              -Dsonar.sources=. \
+                              -Dsonar.host.url=http://host.docker.internal:9000 \
+                              -Dsonar.login=$SONAR_TOKEN
+                        """
+                    }
                     sh "docker build -t ${REGISTRY}/frontend:latest ."
                 }
             }
@@ -105,7 +155,6 @@ pipeline {
             }
         }
 
-        // ✅ Nouveau stage Trivy
         stage('Trivy Scan') {
             steps {
                 script {
