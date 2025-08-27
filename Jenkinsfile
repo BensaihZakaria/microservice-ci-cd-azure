@@ -4,7 +4,7 @@ pipeline {
     tools {
         maven 'maven3'
         nodejs 'nodejs24'
-        // ❌ pas besoin de sonarScanner ici
+        
     }
 
     environment {
